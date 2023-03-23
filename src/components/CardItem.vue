@@ -1,7 +1,7 @@
 <template >
-  <el-space wrap role="listitem" style="margin-right: 0">
+  <el-space v-if="!isDeleted" wrap role="listitem" style="margin-right: 0">
     <el-card v-if="!editMode"
-      ><div>{{ element.title }}</div>
+      ><div>{{ curTitileData }}</div>
       <div class="card-footer">
         <div class="icon-wrapper" @click="editMode = true">
           <font-awesome-icon icon="pen" />
@@ -26,23 +26,33 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue'
+import {
+  defineProps,
+  defineEmits,
+  computed,
+  ref,
+  getCurrentInstance
+} from 'vue'
 import { editData, removeData } from '../store.js'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const props = defineProps(['element', 'currentId'])
-const emit = defineEmits(['edit-data'])
 const element = computed(() => props.element || [])
 const editMode = ref(false)
 const titleData = ref(props.element.title)
+const curTitileData = computed(() => titleData.value)
+const isDeleted = ref(false)
 function editCardData() {
-  editData(route.path.slice(1) + '/' + props.element.id, {
+  const obj = {
     title: titleData.value,
     id: props.element.id
-  })
+  }
+  editData(route.path.slice(1) + '/' + props.element.id, obj)
+  editMode.value = false
 }
 function removeCard() {
   removeData(route.path.slice(1) + '/' + props.element.id)
+  isDeleted.value = true
 }
 </script>
 

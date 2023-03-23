@@ -1,13 +1,13 @@
-<template>
-<el-button @click="modalOpen = true">
+<template :key="componentKey">
+<el-button @click="isModalOpen = true">
       Добавить
     </el-button>
 
     <teleport to="body">
-      <ModalForm :modal-open="modalOpen" :count="count"/>
+      <ModalForm  v-if="isModalOpen" v-model:is-open="isModalOpen" @add-item="addItem"  />
     </teleport>
-   <div  role="list" >  
-            <draggable            
+   <div  role="list" :key="itemsList.length">  
+            <draggable          
               :list="itemsList"
               name="slide"
               item-key="id"
@@ -26,7 +26,6 @@
                     :index="index"
                     :current-id="currentId"
                     tabindex="0"
-                    @edit-data="editData"
                     @focusin="onFocus(element.id)"
                   />
                 </div>
@@ -47,7 +46,7 @@ import { useRoute } from 'vue-router'
 
 const emit = defineEmits(['on-focus', 'on-end', 'edit-data'])
 const state = await useGlobalState();
-const modalOpen = ref(false)
+const isModalOpen = ref(false)
 const route = useRoute()
 const itemComponent = computed(()=> route.path == '/recipes' ? ArticleItem : CardItem)
 const itemsList = computed(() => state?.[route.path.slice(1)] ? Object.values(state?.[route?.path.slice(1)]) :  [])
@@ -63,7 +62,9 @@ function onFocus(id) {
 function onEnd($event) {
   emit('on-end', $event)
 }
-
+function addItem (item) {
+  itemsList.value.push(item)
+}
 </script>
 
 

@@ -40,6 +40,7 @@ export const editData = async (path, data) =>{
   set(ref(db, path), {...data});
 }
 export const removeData = async (path, data) =>{
+  console.log(path)
   remove(ref(db, path));
 }
 
